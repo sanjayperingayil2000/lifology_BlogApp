@@ -1,61 +1,88 @@
 "use client";
 
-import { gql, useQuery } from "@apollo/client";
-import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useRouter, useParams } from "next/navigation";
 
 const GET_POST = gql`
   query GetPost($id: Int!) {
     post(id: $id) {
       id
       title
+      content
       imageUrl
-      createdAt
-      content  # This should match the fields you want to fetch
     }
   }
 `;
 
-const BlogPost = () => {
-  const params = useParams();
+const DELETE_POST = gql`
+  mutation DeletePost($id: Int!) {
+    deletePost(id: $id)
+  }
+`;
 
-  // Ensure `id` is parsed as an integer
-  const postId = params?.id ? parseInt(params.id, 10) : null;
+export default function BlogPost() {
+  const { id } = useParams();
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const { data, loading, error } = useQuery(GET_POST, {
-    skip: !postId, // Prevents sending invalid requests
-    variables: { id: postId }, // Pass `id` as integer to match GraphQL type
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+  }, []);
+
+  const { data, loading } = useQuery(GET_POST, {
+    variables: { id: parseInt(id, 10) },
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) {
-    console.error("GraphQL Error:", error); // Debug: Log full error
-    return <p>Error: {error.message}</p>;
-  }
-  if (!data || !data.post) return <p>No post found.</p>;
+  const [deletePost] = useMutation(DELETE_POST);
 
-  // Ensure date is formatted correctly
-  const formattedDate = data?.post?.createdAt
-    ? new Date(data.post.createdAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : "Unknown Date";
+  const handleDelete = async () => {
+    setIsDeleting(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deletePost({ variables: { id: parseInt(id, 10) } });
+      router.push("/");
+    } catch (error) {
+      alert("Error deleting post");
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (!data?.post) return <p>Post not found</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold">{data.post.title}</h1>
       {data.post.imageUrl && (
-        <img
-          src={data.post.imageUrl}
-          alt={data.post.title}
-          className="w-full h-64 object-cover mt-4"
-        />
+        <img src={data.post.imageUrl} alt={data.post.title} className="w-full h-64 object-cover mt-4" />
       )}
-      <p className="text-gray-500 mt-2">Published on: {formattedDate}</p>
-      <p className="text-gray-600 mt-2">{data.post.content}</p> {/* Render content */}
+      <p className="text-gray-600 mt-2">{data.post.content}</p>
+      
+      {isLoggedIn && (
+        <div className="flex justify-between mt-4">
+          <button onClick={() => router.push(`/edit-post/${id}`)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+            Edit
+          </button>
+          <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-lg">
+            Delete
+          </button>
+        </div>
+      )}
+
+      {isDeleting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="mb-4">Are you sure you want to delete this post?</p>
+            <div className="flex justify-center gap-4">
+              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded-lg">Yes</button>
+              <button onClick={() => setIsDeleting(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">No</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default BlogPost;
+}

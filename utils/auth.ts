@@ -1,15 +1,20 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in the environment variables.');
+  throw new Error("JWT_SECRET is not defined in the environment variables.");
 }
 
 export const generateToken = (userId: number): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1h' });
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });  // ✅ Ensure correct encoding
 };
 
-export const verifyToken = (token: string): { userId: number } => {
-  return jwt.verify(token, JWT_SECRET) as { userId: number };
+export const verifyToken = (token: string): { userId: number } | null => {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { userId: number };
+  } catch (error) {
+    console.error("Invalid token:", error.message);
+    return null;
+  }
 };
