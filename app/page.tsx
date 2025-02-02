@@ -26,7 +26,8 @@ export default function Home() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-6">Blog Posts</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* Container holding all cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ml-[5%] mr-[5%] md:ml-[10%] md:mr-[10%]">
         {data?.posts?.map((post: any) => {
           // Parse the createdAt date
           const createdAtDate = new Date(post.createdAt);

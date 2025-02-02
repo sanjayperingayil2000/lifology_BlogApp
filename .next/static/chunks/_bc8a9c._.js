@@ -69,7 +69,7 @@ function ClientProvider({ children }) {
     }, void 0, false, {
         fileName: "[project]/app/client-provider.tsx",
         lineNumber: 7,
-        columnNumber: 10
+        columnNumber: 12
     }, this);
 }
 _c = ClientProvider;
