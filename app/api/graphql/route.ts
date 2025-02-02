@@ -12,23 +12,32 @@ const server = new ApolloServer({
 });
 
 const handler = startServerAndCreateNextHandler(server, {
-  context: async (req) => { // Ensure `req` is passed correctly
-    // Extract the token from the Authorization header
+  context: async (req) => {  // ✅ Ensure correct function parameter
+    // console.log("Incoming Request:", req); // ✅ Debugging log
+
+    if (!req) {
+      throw new Error("Request object is missing in context.");
+    }
+
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
     let userId = null;
 
     if (token) {
       try {
         const decoded = verifyToken(token);
-        userId = decoded.userId;
+        userId = decoded?.userId || null;
       } catch (error) {
-        console.error('Invalid token:', error);
+        console.error("Invalid token:", error);
       }
     }
 
+    // console.log("Extracted userId:", userId); // ✅ Debugging log
     return { prisma, userId };
   },
 });
+
+
+
 
 export async function GET(req: Request) {
   return handler(req);
