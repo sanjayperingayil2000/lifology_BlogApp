@@ -130,7 +130,7 @@ export default function PostForm() {
   const confirmDelete = async () => {
     try {
       await deletePost({ variables: { id: parseInt(id, 10) } });
-      window.dispatchEvent(new Event("storage")); // ✅ Inform UI to refresh
+      window.dispatchEvent(new Event("storage"));
       router.push("/");
     } catch (error) {
       alert("Error deleting post");

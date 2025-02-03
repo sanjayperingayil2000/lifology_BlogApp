@@ -20,9 +20,10 @@ const GET_POSTS = gql`
   }
 `;
 
+
 export default function Home() {
   const { data, loading, error, refetch } = useQuery(GET_POSTS, {
-    fetchPolicy: "network-only", // ✅ Ensures updated data after delete
+    fetchPolicy: "network-only",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +34,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleStorageChange = () => {
-      refetch(); // ✅ Fetch latest posts when post is deleted or added
+      refetch(); 
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -62,20 +63,25 @@ export default function Home() {
   );
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6">Blog Posts</h1>
-
-      {/* ✅ Search Bar & Create Post Button */}
-      <div className="flex justify-between mb-4">
-        <div>
-          {token && (
-            <button
-              onClick={() => router.push("/create-post")}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg"
-            >
-              + Create Post
-            </button>
-          )}
+    <div className="p-4 mx-[10%]">
+      <h1 className="text-2xl font-bold mb-2">Blog Posts</h1>
+      <p className="text-gray-600 italic">
+        To create or edit posts, please sign up and log in.
+      </p>
+      <p className="text-gray-600 italic">
+            <span className="font-medium">*</span> Only posts created by you can be edited by you.
+        </p>
+      
+      <div className="flex justify-between items-center mb-4">
+        <div className="mr-4">
+            {token && (
+                <button
+                    onClick={() => router.push("/create-post")}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                >
+                    + Create Post
+                </button>
+            )}
         </div>
         <div className="flex">
           <input
@@ -94,7 +100,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ Display filtered & paginated posts */}
+      
       <PostList posts={paginatedPosts} />
       <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
     </div>

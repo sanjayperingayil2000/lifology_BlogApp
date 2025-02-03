@@ -36,7 +36,7 @@ export const resolvers = {
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) throw new Error("Invalid credentials");
 
-      return generateToken(user.id);  // ✅ Returns a valid JWT
+      return generateToken(user.id);  
     },
     signup: async (_, { email, password, name }) => {
       const existingUser = await prisma.user.findUnique({ where: { email } });

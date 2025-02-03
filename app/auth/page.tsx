@@ -68,7 +68,7 @@ const onSubmit = async (data) => {
         alert("Signup successful! Redirecting to home...");
       }
   
-      window.dispatchEvent(new Event("storage")); // ✅ Inform other components about login
+      window.dispatchEvent(new Event("storage"));
       router.push("/");
     } catch (error) {
       alert(`Authentication failed: ${error.message}`);
