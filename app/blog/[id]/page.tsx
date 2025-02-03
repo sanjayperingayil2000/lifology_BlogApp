@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
+
 
 const GET_POST = gql`
   query GetPost($id: Int!) {
@@ -57,8 +59,14 @@ export default function BlogPost() {
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold">{data.post.title}</h1>
       {data.post.imageUrl && (
-        <img src={data.post.imageUrl} alt={data.post.title} className="w-full h-64 object-cover mt-4" />
-      )}
+        <Image
+          src={data.post.imageUrl}
+          alt={data.post.title}
+          width={800}
+          height={500}
+          unoptimized
+          className="w-full h-64 object-cover mt-4"
+        />)}
       <p className="text-gray-600 mt-2">{data.post.content}</p>
       
       {isLoggedIn && (
