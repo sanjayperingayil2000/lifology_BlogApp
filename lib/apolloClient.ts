@@ -1,8 +1,12 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
+const GRAPHQL_URI =
+  process.env.NEXT_PUBLIC_GRAPHQL_URI || "http://localhost:3000/api/graphql";
+
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URI || "/api/graphql",
+  uri: GRAPHQL_URI,
+  credentials: "include", // ✅ Ensures cookies & authentication work
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -19,6 +23,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
+  ssrMode: typeof window === "undefined", // ✅ Improves SSR handling
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
