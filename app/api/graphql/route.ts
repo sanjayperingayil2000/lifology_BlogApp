@@ -30,7 +30,7 @@ const handler = startServerAndCreateNextHandler(server, {
   },
 });
 
-// ✅ Allow All `lifology-blog` Subdomains & Localhost
+// ✅ Allow requests from all `lifology-blog` subdomains + localhost
 const allowedOrigins = [
   "http://localhost:3000",
   "https://lifology-blog.vercel.app",
@@ -38,41 +38,52 @@ const allowedOrigins = [
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
-  if (allowedOrigins.includes(origin)) return true;
-  return /^https:\/\/lifology-blog-[a-z0-9]+-sanjayperingayil2000s-projects\.vercel\.app$/.test(origin);
+  
+  // ✅ Allow all `lifology-blog` subdomains from Vercel
+  if (origin.startsWith("https://lifology-blog-") && origin.includes(".vercel.app")) {
+    return true;
+  }
+
+  // ✅ Allow explicitly listed domains
+  return allowedOrigins.includes(origin);
 }
 
-// ✅ CORS Headers Function
+// ✅ Set CORS Headers
 function setCorsHeaders(req: NextRequest, response: NextResponse): void {
-  const origin = req.headers.get("origin") ?? "";
+  const origin = req.headers.get("origin");
 
-  if (isAllowedOrigin(origin)) {
+  if (origin && isAllowedOrigin(origin)) {
     response.headers.set("Access-Control-Allow-Origin", origin);
   } else {
     response.headers.set("Access-Control-Allow-Origin", "*"); // ✅ Fallback for unexpected domains
   }
 
   response.headers.set("Access-Control-Allow-Credentials", "true");
-  response.headers.set("Access-Control-Allow-Methods", "GET,OPTIONS,POST");
+  response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS, POST");
   response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
 
-// ✅ Fixed API Handlers (Converting `Response` to `NextResponse`)
-export async function GET(req: NextRequest): Promise<NextResponse> {
+// ✅ Convert Response to NextResponse (Fix TypeScript Build Error)
+async function createNextResponse(req: NextRequest): Promise<NextResponse> {
   const response = await handler(req);
-  const nextResponse = new NextResponse(await response.text(), { status: response.status, headers: response.headers });
+  const nextResponse = new NextResponse(await response.text(), {
+    status: response.status,
+    headers: response.headers,
+  });
   setCorsHeaders(req, nextResponse);
   return nextResponse;
+}
+
+// ✅ Fixed API Handlers (CORS applied dynamically)
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  return createNextResponse(req);
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const response = await handler(req);
-  const nextResponse = new NextResponse(await response.text(), { status: response.status, headers: response.headers });
-  setCorsHeaders(req, nextResponse);
-  return nextResponse;
+  return createNextResponse(req);
 }
 
-// ✅ CORS Preflight Handling
+// ✅ CORS Preflight Request Handling
 export async function OPTIONS(req: NextRequest): Promise<NextResponse> {
   const response = new NextResponse(null, { status: 204 });
   setCorsHeaders(req, response);
