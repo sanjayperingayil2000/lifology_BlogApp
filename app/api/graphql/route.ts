@@ -33,14 +33,14 @@ const handler = startServerAndCreateNextHandler(server, {
 // ✅ Allow requests from all `lifology-blog` subdomains + localhost
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://lifology-blog.vercel.app",
+  "https://lifology-blog-app.vercel.app",
 ];
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
-  
-  // ✅ Allow all `lifology-blog` subdomains from Vercel
-  if (origin.startsWith("https://lifology-blog-") && origin.includes(".vercel.app")) {
+
+  // ✅ Allow all `lifology-blog` subdomains on Vercel
+  if (origin.endsWith(".vercel.app") && origin.includes("lifology-blog")) {
     return true;
   }
 
@@ -55,7 +55,7 @@ function setCorsHeaders(req: NextRequest, response: NextResponse): void {
   if (origin && isAllowedOrigin(origin)) {
     response.headers.set("Access-Control-Allow-Origin", origin);
   } else {
-    response.headers.set("Access-Control-Allow-Origin", "*"); // ✅ Fallback for unexpected domains
+    response.headers.set("Access-Control-Allow-Origin", "https://lifology-blog-app.vercel.app"); // ✅ Fallback
   }
 
   response.headers.set("Access-Control-Allow-Credentials", "true");
