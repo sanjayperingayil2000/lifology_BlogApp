@@ -5,11 +5,11 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
-    // Hash passwords
+    // ✅ Hash passwords
     const password1 = await bcrypt.hash('greenEarth123', 10);
     const password2 = await bcrypt.hash('natureLove456', 10);
 
-    // Create first user
+    // ✅ Create first user
     const user1 = await prisma.user.upsert({
       where: { email: 'naturelover1@example.com' },
       update: {},
@@ -20,7 +20,7 @@ async function main() {
       },
     });
 
-    // Create second user
+    // ✅ Create second user
     const user2 = await prisma.user.upsert({
       where: { email: 'natureexplorer@example.com' },
       update: {},
@@ -33,76 +33,76 @@ async function main() {
 
     console.log('Users created:', user1, user2);
 
-    // Nature-themed blog posts (Short Titles + Rich Content)
+    // ✅ Nature-Themed Blog Posts
     const postData = [
       { 
-        title: 'The Amazon Rainforest', 
-        content: 'Covering 5.5 million square kilometers, the Amazon is the largest rainforest on Earth. It houses nearly 10% of the world’s species, making it one of the most biodiverse places. Deforestation threatens its delicate balance, but conservation efforts aim to protect this vital ecosystem for future generations.'
+        title: 'Amazon Rainforest Wonders', 
+        content: 'The Amazon Rainforest, spanning over 5.5 million square kilometers, is home to nearly 10% of all species on Earth. Its dense vegetation and rich biodiversity make it one of the most important ecosystems on the planet. Conservation efforts are crucial to protect its wildlife and indigenous communities.'
       },
       { 
-        title: 'Majestic Waterfalls', 
-        content: 'From the thunderous Niagara Falls to the breathtaking Iguazu Falls, waterfalls are nature’s way of showcasing raw power and beauty. These cascading waters provide not only a stunning view but also support wildlife and generate hydroelectric energy in many regions.'
+        title: 'Mystical Mountain Peaks', 
+        content: 'Towering mountains have long fascinated adventurers and nature lovers alike. The Himalayas, the Alps, and the Andes are some of the most breathtaking mountain ranges, offering not just scenic beauty but also shelter to unique flora and fauna.'
       },
       { 
-        title: 'How Trees Communicate', 
-        content: 'Deep beneath the forest floor, trees exchange nutrients and send distress signals through mycorrhizal fungi, forming a "wood wide web." Scientists have discovered that trees cooperate rather than compete, ensuring the survival of the entire forest ecosystem.'
+        title: 'Serenity of Ocean Waves', 
+        content: 'The rhythmic crashing of ocean waves has a soothing effect on the human mind. From the Pacific to the Atlantic, our oceans cover 70% of the Earth and sustain millions of marine species. Coral reefs, often called the "rainforests of the sea," are particularly vulnerable to climate change.'
       },
       { 
-        title: 'Best National Parks', 
-        content: 'National parks preserve Earth’s natural wonders, offering sanctuaries for wildlife and breathtaking landscapes. Yellowstone’s geysers, Yosemite’s granite cliffs, and the Serengeti’s great migration are just a few marvels awaiting visitors seeking adventure and serenity in the wild.'
+        title: 'Secrets of Ancient Forests', 
+        content: 'Forests have existed for millions of years, shaping the planet’s climate and biodiversity. The towering trees of the Redwoods, the mystical Black Forest in Germany, and the dense jungles of Borneo are a few examples of these timeless wonders.'
       },
       { 
-        title: 'Sunrise and Sunset', 
-        content: 'The golden hues of dawn and dusk result from light scattering in the atmosphere. Sunrises symbolize new beginnings, while sunsets offer a moment of reflection. Some of the world’s best sunset spots include Santorini, the Grand Canyon, and Bali’s Uluwatu Temple.'
+        title: 'Golden Fields of Wheat', 
+        content: 'Expansive wheat fields stretch across landscapes, swaying gently with the wind. These golden fields not only provide food for millions but also create stunning scenery, especially during sunrise and sunset, when the light enhances their golden hue.'
       },
       { 
-        title: 'The Ocean’s Depths', 
-        content: 'Covering 70% of our planet, the ocean remains largely unexplored. The Mariana Trench, the deepest point on Earth, harbors creatures adapted to extreme conditions. Coral reefs, often called the "rainforests of the sea," support vast marine biodiversity but face threats from climate change.'
+        title: 'Wonders of the Arctic', 
+        content: 'Despite its freezing temperatures, the Arctic is home to incredible wildlife like polar bears, arctic foxes, and seals. However, melting ice due to global warming threatens this delicate ecosystem, impacting both animals and indigenous communities.'
       },
       { 
-        title: 'Wildlife Photography Tips', 
-        content: 'Capturing wildlife requires patience, the right equipment, and a deep respect for nature. Golden hour lighting enhances shots, while silent observation allows photographers to document authentic animal behavior. Ethical photography prioritizes the well-being of creatures over the perfect shot.'
+        title: 'Enchanting Waterfalls', 
+        content: 'The sheer power of waterfalls has inspired awe for centuries. From the mighty Niagara Falls to the ethereal Angel Falls, these natural spectacles serve as both a source of energy and a haven for biodiversity.'
       },
       { 
-        title: 'The Arctic’s Survival', 
-        content: 'Despite extreme cold, Arctic wildlife thrives through remarkable adaptations. Polar bears rely on sea ice for hunting, while Arctic foxes change coat color with the seasons. Climate change is rapidly altering this fragile ecosystem, affecting both wildlife and indigenous communities.'
+        title: 'Sunset Over Vast Deserts', 
+        content: 'The Sahara, Gobi, and Atacama deserts may seem lifeless, but they are teeming with life adapted to extreme conditions. Sunsets over these vast landscapes paint the sky with breathtaking hues of orange, pink, and purple.'
       },
       { 
-        title: 'Fireflies at Night', 
-        content: 'Fireflies glow through bioluminescence, a chemical reaction that produces cold light. These "living lanterns" use their flashes to attract mates and warn predators. However, habitat loss and light pollution are causing firefly populations to decline worldwide.'
+        title: 'The Night Sky’s Beauty', 
+        content: 'Away from city lights, the night sky reveals a dazzling display of stars, planets, and even the Milky Way. Stargazing in remote locations like the Atacama Desert or the Himalayas offers an unforgettable experience.'
       },
       { 
-        title: 'Off-Grid Living', 
-        content: 'Living off-grid means disconnecting from conventional utilities and relying on renewable resources. Solar panels, rainwater harvesting, and permaculture gardens allow people to live sustainably. This lifestyle fosters self-sufficiency, reduces carbon footprints, and deepens one’s connection to nature.'
+        title: 'Life in a Hidden Valley', 
+        content: 'Deep valleys, hidden between towering mountains, often contain untouched nature. These valleys are rich in biodiversity and provide a refuge for rare species, from snow leopards to exotic plant life found nowhere else.'
       },
       { 
-        title: 'The Serengeti Migration', 
-        content: 'Each year, millions of wildebeest, zebras, and gazelles embark on an 800-km journey across the Serengeti. This great migration, driven by rainfall and the search for fresh grass, is one of nature’s most breathtaking spectacles, sustaining countless predators along the way.'
+        title: 'The Magic of Fireflies', 
+        content: 'Fireflies, or lightning bugs, light up summer nights with their bioluminescent glow. This magical phenomenon is used for communication and mating. Unfortunately, habitat destruction and light pollution threaten these beautiful creatures.'
       },
       { 
-        title: 'Healing Forest Walks', 
-        content: 'Forest bathing, or "Shinrin-yoku," is a Japanese practice that reduces stress and improves well-being. Studies show that immersing oneself in nature lowers cortisol levels, boosts immune function, and enhances overall mental clarity. A simple walk among trees can work wonders for the soul.'
+        title: 'Healing Forest Therapy', 
+        content: 'Forest therapy, known as "Shinrin-yoku" in Japan, has been scientifically proven to reduce stress and improve well-being. Walking among trees helps lower blood pressure, enhance mood, and boost the immune system.'
       },
       { 
-        title: 'Mountain Ecosystems', 
-        content: 'Mountains provide fresh water for over half of humanity and host unique biodiversity. Alpine plants and animals, such as snow leopards and ibex, have adapted to harsh conditions. However, rising temperatures threaten these fragile ecosystems, making conservation efforts more crucial than ever.'
+        title: 'The Grand Canyon’s Majesty', 
+        content: 'Carved by the Colorado River over millions of years, the Grand Canyon stands as a testament to nature’s artistic power. Its immense size and vibrant rock layers tell the story of Earth’s geological past.'
       },
       { 
-        title: 'Eco-Friendly Travel', 
-        content: 'Sustainable tourism reduces environmental impact while supporting local communities. Choosing eco-lodges, minimizing plastic use, and respecting wildlife are key practices. Destinations like Costa Rica, Bhutan, and Norway lead in eco-conscious travel experiences.'
+        title: 'Secrets of Tropical Rainforests', 
+        content: 'Tropical rainforests, like the Amazon and Congo Basin, play a critical role in regulating the Earth’s climate. They absorb carbon dioxide, produce oxygen, and provide shelter to countless species, many of which are yet to be discovered.'
       },
       { 
-        title: 'Secrets of Bioluminescence', 
-        content: 'From glowing plankton in tropical waters to the eerie deep-sea anglerfish, bioluminescence is nature’s own light show. This phenomenon serves as camouflage, attraction, or defense in various creatures, illuminating the mysteries of the natural world.'
+        title: 'Peaceful Life by the River', 
+        content: 'Rivers have shaped civilizations for thousands of years. From the Nile to the Amazon, these water bodies support diverse ecosystems, nourish farmland, and offer breathtaking landscapes perfect for relaxation and reflection.'
       }
     ];
 
-    // Generate posts for each user
+    // ✅ Generate Posts for Each User
     for (const user of [user1, user2]) {
       const posts = postData.map((post, index) => ({
         title: post.title,
         content: post.content,
-        imageUrl: `https://source.unsplash.com/600x400/?nature,forest,mountain,waterfall&random=${index + 1}`,
+        imageUrl: `https://picsum.photos/600/400?random=${index + 1}`,
         createdAt: new Date(),
         updatedAt: new Date(),
         authorId: user.id,
@@ -113,9 +113,9 @@ async function main() {
       console.log(`Created ${postData.length} posts for ${user.name}`);
     }
 
-    console.log('Seeding completed successfully.');
+    console.log('✅ Seeding completed successfully.');
   } catch (error) {
-    console.error('Error during seeding:', error);
+    console.error('❌ Error during seeding:', error);
   } finally {
     await prisma.$disconnect();
   }
