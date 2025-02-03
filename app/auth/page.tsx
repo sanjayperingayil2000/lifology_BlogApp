@@ -19,44 +19,26 @@ const LOGIN = gql`
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const [login] = useMutation(LOGIN);
-  const [signup] = useMutation(SIGNUP);
   const router = useRouter();
 
-//   const onSubmit = async (data) => {
-//     if (!isLogin && data.password !== data.confirmPassword) {
-//       alert("Passwords do not match!");
-//       return;
-//     }
+  interface AuthFormData {
+    email: string;
+    password: string;
+    confirmPassword?: string;
+    name?: string;
+  }
 
-//     try {
-//       let response;
-//       if (isLogin) {
-//         response = await login({ variables: { email: data.email, password: data.password } });
-//         localStorage.setItem("token", response.data.login);
-//       } else {
-//         response = await signup({ variables: { email: data.email, password: data.password, name: data.name } });
-//         localStorage.setItem("token", response.data.signup);
-//         alert("Signup successful! Redirecting to home...");
-//       }
-      
-//       // ✅ Decode JWT to extract userId and store it
-//       const decodedToken = JSON.parse(atob(response.data.login?.split(".")[1] || response.data.signup?.split(".")[1]));
-//       localStorage.setItem("userId", decodedToken.userId);
-      
-//       router.push("/");
-//     } catch (error) {
-//       alert(`Authentication failed: ${error.message}`);
-//     }
-//   };
+  // ✅ Fix: Explicitly type useForm
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<AuthFormData>();
+  const [login] = useMutation(LOGIN);
+  const [signup] = useMutation(SIGNUP);
 
-const onSubmit = async (data) => {
+  const onSubmit = async (data: AuthFormData) => {
     if (!isLogin && data.password !== data.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-  
+
     try {
       let response;
       if (isLogin) {
@@ -67,15 +49,15 @@ const onSubmit = async (data) => {
         localStorage.setItem("token", response.data.signup);
         alert("Signup successful! Redirecting to home...");
       }
-  
+
       window.dispatchEvent(new Event("storage"));
       router.push("/");
     } catch (error) {
-      alert(`Authentication failed: ${error.message}`);
+      const errMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      alert(`Authentication failed: ${errMsg}`);
     }
   };
 
-  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
