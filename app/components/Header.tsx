@@ -27,7 +27,7 @@ export default function Header() {
 
   return (
     <header className="flex justify-between p-4 bg-gray-100 shadow-md">
-      <h1 className="text-2xl font-bold">Sanjay's Personal Blogs</h1>
+      <h1 className="text-2xl font-bold">Sanjay&apos;s Personal Blogs</h1>
       <div className="flex space-x-4">
         {isLoggedIn ? (
           <>
