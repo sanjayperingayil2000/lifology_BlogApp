@@ -30,39 +30,50 @@ const handler = startServerAndCreateNextHandler(server, {
   },
 });
 
-// Secure CORS - Allow only your frontend URL
-const allowedOrigins = [
-  "http://localhost:3000",  // Local Dev
-  "https://lifology-blog-fylq738zy-sanjayperingayil2000s-projects.vercel.app",  // Production
-];
+// ✅ Allow All Subdomains of `lifology-blog`
+const allowedOrigins = new Set([
+  "http://localhost:3000", // Local Dev
+]);
 
-export const GET = async (req: NextRequest) => {
-  const response = await handler(req);
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  if (allowedOrigins.has(origin)) return true;
+  return /^https:\/\/lifology-blog-[a-z0-9]+-sanjayperingayil2000s-projects\.vercel\.app$/.test(origin);
+}
+
+// ✅ CORS Headers Function (No TypeScript Error)
+function setCorsHeaders(req: NextRequest, response: NextResponse): void {
+  const origin = req.headers.get("origin") ?? "";
+
+  if (isAllowedOrigin(origin)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+  } else {
+    response.headers.set("Access-Control-Allow-Origin", "*");
+  }
+
   response.headers.set("Access-Control-Allow-Credentials", "true");
-  response.headers.set("Access-Control-Allow-Origin", allowedOrigins.includes(req.headers.get("origin") || "") ? req.headers.get("origin")! : "*");
   response.headers.set("Access-Control-Allow-Methods", "GET,OPTIONS,POST");
   response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  return response;
-};
+}
 
-export const POST = async (req: NextRequest) => {
+// ✅ Fixed API Handlers (Converting `Response` to `NextResponse`)
+export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const response = await handler(req);
-  response.headers.set("Access-Control-Allow-Credentials", "true");
-  response.headers.set("Access-Control-Allow-Origin", allowedOrigins.includes(req.headers.get("origin") || "") ? req.headers.get("origin")! : "*");
-  response.headers.set("Access-Control-Allow-Methods", "GET,OPTIONS,POST");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  return response;
+  const nextResponse = new NextResponse(response.body, response); // ✅ Convert Response → NextResponse
+  setCorsHeaders(req, nextResponse);
+  return nextResponse;
 };
 
-// Ensure OPTIONS method is properly handled for CORS preflight
-export async function OPTIONS(req: NextRequest) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Allow-Origin": allowedOrigins.includes(req.headers.get("origin") || "") ? req.headers.get("origin")! : "*",
-      "Access-Control-Allow-Methods": "GET,OPTIONS,POST",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
-  });
+export const POST = async (req: NextRequest): Promise<NextResponse> => {
+  const response = await handler(req);
+  const nextResponse = new NextResponse(response.body, response); // ✅ Convert Response → NextResponse
+  setCorsHeaders(req, nextResponse);
+  return nextResponse;
+};
+
+// ✅ CORS Preflight Handling
+export async function OPTIONS(req: NextRequest): Promise<NextResponse> {
+  const response = new NextResponse(null, { status: 204 });
+  setCorsHeaders(req, response);
+  return response;
 }
