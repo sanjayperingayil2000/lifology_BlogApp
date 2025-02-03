@@ -16,7 +16,6 @@ export default function Header() {
       setIsLoggedIn(!!localStorage.getItem("token"));
     };
 
-    // ✅ Listen for login/logout changes
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
@@ -24,13 +23,13 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    window.dispatchEvent(new Event("storage")); // ✅ Force re-render of Header
+    window.dispatchEvent(new Event("storage")); 
     router.push("/");
   };
 
   return (
     <header className="flex justify-between p-4 bg-gray-100 shadow-md">
-      <h1 className="text-2xl font-bold">Blog</h1>
+      <h1 className="text-2xl font-bold">Sanjays Personal Blogs</h1>
       <div className="flex space-x-4">
         {/* {isLoggedIn && (
           <Link href="/create-post" className="bg-blue-500 text-white p-2 rounded-lg">

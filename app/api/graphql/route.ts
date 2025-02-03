@@ -12,8 +12,7 @@ const server = new ApolloServer({
 });
 
 const handler = startServerAndCreateNextHandler(server, {
-  context: async (req) => {  // ✅ Ensure correct function parameter
-    // console.log("Incoming Request:", req); // ✅ Debugging log
+  context: async (req) => {  
 
     if (!req) {
       throw new Error("Request object is missing in context.");
@@ -30,8 +29,7 @@ const handler = startServerAndCreateNextHandler(server, {
         console.error("Invalid token:", error);
       }
     }
-
-    // console.log("Extracted userId:", userId); // ✅ Debugging log
+    
     return { prisma, userId };
   },
 });

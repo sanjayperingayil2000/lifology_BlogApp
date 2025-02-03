@@ -58,9 +58,9 @@ async function main() {
         title: `${post.title} - ${index + 1}`,
         content: post.content,
         imageUrl: `https://picsum.photos/600/400?random=${index + 1}`,
-        createdAt: new Date(), // Fix for 'Cannot return null for non-nullable field Post.createdAt'
+        createdAt: new Date(), 
         updatedAt: new Date(),
-        authorId: user.id, // Use authorId to link the user
+        authorId: user.id, 
       }));
 
       await prisma.post.createMany({ data: posts });
