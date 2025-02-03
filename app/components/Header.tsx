@@ -31,9 +31,6 @@ export default function Header() {
       <div className="flex space-x-4">
         {isLoggedIn ? (
           <>
-            <Link href="/create-post" className="bg-blue-500 text-white p-2 rounded-lg">
-              + Create Post
-            </Link>
             <button onClick={handleLogout} className="bg-red-500 text-white p-2 rounded-lg">
               Logout
             </button>
