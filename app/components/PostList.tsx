@@ -1,7 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const PostList = ({ posts }) => {
+interface Post {
+  id: number;
+  title: string;
+  imageUrl: string;
+  author: {
+    name: string;
+  };
+}
+
+interface PostListProps {
+  posts: Post[];
+}
+
+const PostList: React.FC<PostListProps> = ({ posts }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 mx-[1%] md:mx-[5%]">
       {posts.map((post) => (

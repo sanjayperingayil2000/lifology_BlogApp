@@ -5,7 +5,6 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 
-
 const GET_POST = gql`
   query GetPost($id: Int!) {
     post(id: $id) {
@@ -34,7 +33,8 @@ export default function BlogPost() {
   }, []);
 
   const { data, loading } = useQuery(GET_POST, {
-    variables: { id: parseInt(id, 10) },
+    skip: !id, // Skip query if id is undefined
+    variables: { id: id ? parseInt(id as string, 10) : undefined },
   });
 
   const [deletePost] = useMutation(DELETE_POST);
@@ -45,10 +45,11 @@ export default function BlogPost() {
 
   const confirmDelete = async () => {
     try {
-      await deletePost({ variables: { id: parseInt(id, 10) } });
+      await deletePost({ variables: { id: id ? parseInt(id as string, 10) : undefined } });
       router.push("/");
     } catch (error) {
       alert("Error deleting post");
+      console.log(error);
     }
   };
 
@@ -66,9 +67,10 @@ export default function BlogPost() {
           height={500}
           unoptimized
           className="w-full h-64 object-cover mt-4"
-        />)}
+        />
+      )}
       <p className="text-gray-600 mt-2">{data.post.content}</p>
-      
+
       {isLoggedIn && (
         <div className="flex justify-between mt-4">
           <button onClick={() => router.push(`/edit-post/${id}`)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
@@ -85,8 +87,12 @@ export default function BlogPost() {
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <p className="mb-4">Are you sure you want to delete this post?</p>
             <div className="flex justify-center gap-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded-lg">Yes</button>
-              <button onClick={() => setIsDeleting(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">No</button>
+              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded-lg">
+                Yes
+              </button>
+              <button onClick={() => setIsDeleting(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">
+                No
+              </button>
             </div>
           </div>
         </div>

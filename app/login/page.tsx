@@ -23,6 +23,7 @@ export default function Login() {
       localStorage.setItem('token', data.login);
       router.push('/');
     } catch (error) {
+      console.log(error);
       alert('Login failed');
     }
   };

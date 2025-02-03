@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const CREATE_POST = gql`
   mutation CreatePost($title: String!, $content: String!, $imageUrl: String) {
@@ -62,21 +62,25 @@ const DELETE_POST = gql`
   }
 `;
 
+interface PostFormData {
+  title: string;
+  content: string;
+  imageUrl?: string;
+}
+
 export default function PostForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<PostFormData>();
   const [createPost] = useMutation(CREATE_POST, { refetchQueries: [{ query: GET_POSTS }] });
   const [updatePost] = useMutation(UPDATE_POST, { refetchQueries: [{ query: GET_POSTS }] });
   const [deletePost] = useMutation(DELETE_POST, { refetchQueries: [{ query: GET_POSTS }] });
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
     if (token) {
       try {
         const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -90,16 +94,14 @@ export default function PostForm() {
   useEffect(() => {
     const handleStorageChange = () => {
       const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
     };
-
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const { data, loading, refetch } = useQuery(GET_POST, {
     skip: !isEditing,
-    variables: { id: parseInt(id, 10) },
+    variables: { id: id ? parseInt(id as string, 10) : 0 },
     onCompleted: (data) => {
       if (data?.post) {
         setValue("title", data.post.title);
@@ -109,16 +111,17 @@ export default function PostForm() {
     },
   });
 
-  const onSubmit = async (formData) => {
+  const onSubmit: SubmitHandler<PostFormData> = async (formData) => {
     try {
       if (isEditing) {
-        await updatePost({ variables: { id: parseInt(id, 10), ...formData } });
+        await updatePost({ variables: { id: parseInt(id as string, 10), ...formData } });
       } else {
         await createPost({ variables: { ...formData } });
       }
       refetch(); // Refetch posts after updating/creating
       router.push("/");
     } catch (error) {
+      console.error(error);
       alert("Error saving post");
     }
   };
@@ -129,14 +132,14 @@ export default function PostForm() {
 
   const confirmDelete = async () => {
     try {
-      await deletePost({ variables: { id: parseInt(id, 10) } });
+      await deletePost({ variables: { id: parseInt(id as string, 10) } });
       window.dispatchEvent(new Event("storage"));
       router.push("/");
     } catch (error) {
+      console.error(error);
       alert("Error deleting post");
     }
   };
-  
 
   if (loading) return <p>Loading...</p>;
 
@@ -147,12 +150,12 @@ export default function PostForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input {...register("title", { required: "Title is required" })} type="text" placeholder="Title" className="w-full p-2 border rounded-lg" />
           {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-          
+
           <input {...register("imageUrl")} type="text" placeholder="Image URL" className="w-full p-2 border rounded-lg" />
-          
+
           <textarea {...register("content", { required: "Content is required" })} placeholder="Content" className="w-full p-2 border rounded-lg" />
           {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
-          
+
           <div className="flex justify-between">
             <button type="button" onClick={() => router.push("/")} className="bg-gray-500 text-white px-4 py-2 rounded-lg">Cancel</button>
             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">{isEditing ? "Update" : "Submit"}</button>

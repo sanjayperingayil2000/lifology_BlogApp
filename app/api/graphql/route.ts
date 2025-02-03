@@ -12,11 +12,11 @@ const server = new ApolloServer({
 });
 
 const handler = startServerAndCreateNextHandler(server, {
-  context: async (req: NextRequest) => {
+  context: async (_req: NextRequest) => {
     let userId = null;
 
     try {
-      const token = req.headers.get("authorization")?.replace("Bearer ", "");
+      const token = _req.headers.get("authorization")?.replace("Bearer ", "");
       if (token) {
         const decoded = verifyToken(token);
         userId = decoded?.userId || null;
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   return handler(req);
 }
 
-export async function OPTIONS(req: NextRequest) {
+export async function OPTIONS(_req: NextRequest) {
   return new NextResponse(null, {
     status: 204,
     headers: {

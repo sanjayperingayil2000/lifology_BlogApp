@@ -20,9 +20,18 @@ const GET_POSTS = gql`
   }
 `;
 
+interface Post {
+  id: number;
+  title: string;
+  imageUrl: string;
+  author: {
+    name: string;
+  };
+  createdAt: string;
+}
 
 export default function Home() {
-  const { data, loading, error, refetch } = useQuery(GET_POSTS, {
+  const { data, loading, error, refetch } = useQuery<{ posts: Post[] }>(GET_POSTS, {
     fetchPolicy: "network-only",
   });
 
@@ -34,7 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleStorageChange = () => {
-      refetch(); 
+      refetch();
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -52,7 +61,7 @@ export default function Home() {
   if (error) return <p className="text-center text-red-500">Error: {error.message}</p>;
   if (!data || !data.posts.length) return <p className="text-center text-gray-500">No posts found.</p>;
 
-  const filteredPosts = data.posts.filter((post) =>
+  const filteredPosts = data.posts.filter((post: Post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -69,19 +78,19 @@ export default function Home() {
         To create or edit posts, please sign up and log in.
       </p>
       <p className="text-gray-600 italic">
-            <span className="font-medium">*</span> Only posts created by you can be edited by you.
-        </p>
+        <span className="font-medium">*</span> Only posts created by you can be edited by you.
+      </p>
       
       <div className="flex justify-between items-center mb-4">
         <div className="mr-4">
-            {token && (
-                <button
-                    onClick={() => router.push("/create-post")}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
-                >
-                    + Create Post
-                </button>
-            )}
+          {token && (
+            <button
+              onClick={() => router.push("/create-post")}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg"
+            >
+              + Create Post
+            </button>
+          )}
         </div>
         <div className="flex">
           <input
@@ -100,7 +109,6 @@ export default function Home() {
         </div>
       </div>
 
-      
       <PostList posts={paginatedPosts} />
       <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
     </div>
