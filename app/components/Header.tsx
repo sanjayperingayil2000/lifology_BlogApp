@@ -9,37 +9,35 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // ✅ Check login state on component mount
-    setIsLoggedIn(!!localStorage.getItem("token"));
-
-    const handleStorageChange = () => {
+    const checkLoginState = () => {
       setIsLoggedIn(!!localStorage.getItem("token"));
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    checkLoginState(); // ✅ Run on mount
+    window.addEventListener("storage", checkLoginState); // ✅ Listen for login/logout updates
+
+    return () => window.removeEventListener("storage", checkLoginState);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    window.dispatchEvent(new Event("storage")); 
+    window.dispatchEvent(new Event("storage")); // ✅ Force UI update
     router.push("/");
   };
 
   return (
     <header className="flex justify-between p-4 bg-gray-100 shadow-md">
-      <h1 className="text-2xl font-bold">Sanjays Personal Blogs</h1>
+      <h1 className="text-2xl font-bold">Sanjay's Personal Blogs</h1>
       <div className="flex space-x-4">
-        {/* {isLoggedIn && (
-          <Link href="/create-post" className="bg-blue-500 text-white p-2 rounded-lg">
-            + Create Post
-          </Link>
-        )} */}
         {isLoggedIn ? (
-          <button onClick={handleLogout} className="bg-red-500 text-white p-2 rounded-lg">
-            Logout
-          </button>
+          <>
+            <Link href="/create-post" className="bg-blue-500 text-white p-2 rounded-lg">
+              + Create Post
+            </Link>
+            <button onClick={handleLogout} className="bg-red-500 text-white p-2 rounded-lg">
+              Logout
+            </button>
+          </>
         ) : (
           <Link href="/auth" className="bg-green-500 text-white p-2 rounded-lg">
             Login / Signup

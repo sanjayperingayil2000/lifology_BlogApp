@@ -37,9 +37,20 @@ export default function Home() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const postsPerPage = 16; // 4x4 grid
   const router = useRouter();
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  useEffect(() => {
+    const checkLoginState = () => {
+      setIsLoggedIn(!!localStorage.getItem("token"));
+    };
+
+    checkLoginState();
+    window.addEventListener("storage", checkLoginState);
+
+    return () => window.removeEventListener("storage", checkLoginState);
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -83,7 +94,7 @@ export default function Home() {
       
       <div className="flex justify-between items-center mb-4">
         <div className="mr-4">
-          {token && (
+          {isLoggedIn && (
             <button
               onClick={() => router.push("/create-post")}
               className="bg-green-500 text-white px-4 py-2 rounded-lg"
