@@ -30,25 +30,26 @@ const handler = startServerAndCreateNextHandler(server, {
   },
 });
 
-// ✅ Allow All Subdomains of `lifology-blog`
-const allowedOrigins = new Set([
-  "http://localhost:3000", // Local Dev
-]);
+// ✅ Allow All `lifology-blog` Subdomains & Localhost
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://lifology-blog.vercel.app",
+];
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
-  if (allowedOrigins.has(origin)) return true;
+  if (allowedOrigins.includes(origin)) return true;
   return /^https:\/\/lifology-blog-[a-z0-9]+-sanjayperingayil2000s-projects\.vercel\.app$/.test(origin);
 }
 
-// ✅ CORS Headers Function (No TypeScript Error)
+// ✅ CORS Headers Function
 function setCorsHeaders(req: NextRequest, response: NextResponse): void {
   const origin = req.headers.get("origin") ?? "";
 
   if (isAllowedOrigin(origin)) {
     response.headers.set("Access-Control-Allow-Origin", origin);
   } else {
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Origin", "*"); // ✅ Fallback for unexpected domains
   }
 
   response.headers.set("Access-Control-Allow-Credentials", "true");
@@ -57,19 +58,19 @@ function setCorsHeaders(req: NextRequest, response: NextResponse): void {
 }
 
 // ✅ Fixed API Handlers (Converting `Response` to `NextResponse`)
-export const GET = async (req: NextRequest): Promise<NextResponse> => {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   const response = await handler(req);
-  const nextResponse = new NextResponse(response.body, response); // ✅ Convert Response → NextResponse
+  const nextResponse = new NextResponse(await response.text(), { status: response.status, headers: response.headers });
   setCorsHeaders(req, nextResponse);
   return nextResponse;
-};
+}
 
-export const POST = async (req: NextRequest): Promise<NextResponse> => {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const response = await handler(req);
-  const nextResponse = new NextResponse(response.body, response); // ✅ Convert Response → NextResponse
+  const nextResponse = new NextResponse(await response.text(), { status: response.status, headers: response.headers });
   setCorsHeaders(req, nextResponse);
   return nextResponse;
-};
+}
 
 // ✅ CORS Preflight Handling
 export async function OPTIONS(req: NextRequest): Promise<NextResponse> {
