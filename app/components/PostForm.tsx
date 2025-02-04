@@ -118,7 +118,7 @@ export default function PostForm() {
       } else {
         await createPost({ variables: { ...formData } });
       }
-      refetch(); // Refetch posts after updating/creating
+      refetch();
       router.push("/");
     } catch (error) {
       console.error(error);
@@ -137,7 +137,7 @@ export default function PostForm() {
       router.push("/");
     } catch (error) {
       console.error(error);
-      alert("Error deleting post");
+      alert("Unauthorized: You can only delete your own post");
     }
   };
 

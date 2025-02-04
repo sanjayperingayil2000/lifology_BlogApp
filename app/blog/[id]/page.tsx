@@ -33,7 +33,7 @@ export default function BlogPost() {
   }, []);
 
   const { data, loading } = useQuery(GET_POST, {
-    skip: !id, // Skip query if id is undefined
+    skip: !id, 
     variables: { id: id ? parseInt(id as string, 10) : undefined },
   });
 
@@ -48,7 +48,7 @@ export default function BlogPost() {
       await deletePost({ variables: { id: id ? parseInt(id as string, 10) : undefined } });
       router.push("/");
     } catch (error) {
-      alert("Error deleting post");
+      alert("Unauthorized: You can only delete your own post");
       console.log(error);
     }
   };

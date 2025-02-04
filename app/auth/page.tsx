@@ -28,7 +28,7 @@ export default function AuthPage() {
     name?: string;
   }
 
-  // ✅ Fix: Explicitly type useForm
+  
   const { register, handleSubmit, watch, formState: { errors } } = useForm<AuthFormData>();
   const [login] = useMutation(LOGIN);
   const [signup] = useMutation(SIGNUP);

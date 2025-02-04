@@ -13,15 +13,15 @@ export default function Header() {
       setIsLoggedIn(!!localStorage.getItem("token"));
     };
 
-    checkLoginState(); // ✅ Run on mount
-    window.addEventListener("storage", checkLoginState); // ✅ Listen for login/logout updates
+    checkLoginState();
+    window.addEventListener("storage", checkLoginState);
 
     return () => window.removeEventListener("storage", checkLoginState);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.dispatchEvent(new Event("storage")); // ✅ Force UI update
+    window.dispatchEvent(new Event("storage"));
     router.push("/");
   };
 
