@@ -122,7 +122,7 @@ export default function PostForm() {
       router.push("/");
     } catch (error) {
       console.error(error);
-      alert("Error saving post");
+      alert("Unauthorized: You can only edit your own postsError saving post");
     }
   };
 

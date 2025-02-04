@@ -38,18 +38,11 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const postsPerPage = 16; // 4x4 grid
+  const postsPerPage = 16;
   const router = useRouter();
 
   useEffect(() => {
-    const checkLoginState = () => {
-      setIsLoggedIn(!!localStorage.getItem("token"));
-    };
-
-    checkLoginState();
-    window.addEventListener("storage", checkLoginState);
-
-    return () => window.removeEventListener("storage", checkLoginState);
+    setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
 
   useEffect(() => {
@@ -91,25 +84,24 @@ export default function Home() {
       <p className="text-gray-600 italic">
         <span className="font-medium">*</span> Only posts created by you can be edited by you.
       </p>
-      
-      <div className="flex justify-between items-center mb-4">
-        <div className="mr-4">
-          {isLoggedIn && (
-            <button
-              onClick={() => router.push("/create-post")}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg"
-            >
-              + Create Post
-            </button>
-          )}
-        </div>
-        <div className="flex">
+
+      {/* Flex column for mobile */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+        {isLoggedIn && (
+          <button
+            onClick={() => router.push("/create-post")}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 sm:mb-0 sm:mr-4"
+          >
+            + Create Post
+          </button>
+        )}
+        <div className="flex w-full sm:w-auto">
           <input
             type="text"
             placeholder="Search posts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border p-2 rounded-lg w-[250px]"
+            className="border p-2 rounded-lg flex-grow sm:w-[250px]"
           />
           <button
             className="ml-2 bg-blue-500 text-white p-2 rounded-lg"
